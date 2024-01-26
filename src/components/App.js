@@ -15,7 +15,7 @@ import MyCryptoBoys from "./MyCryptoBoys/MyCryptoBoys";
 import Queries from "./Queries/Queries";
 
 const ipfsClient = require("ipfs-http-client");
-const ipfs = ipfsClient({
+const ipfs = ipfsClient.create({
   host: "ipfs.infura.io",
   port: 5001,
   protocol: "https",
@@ -111,15 +111,16 @@ class App extends Component {
       const networkData = CryptoBoys.networks[networkId];
       if (networkData) {
         this.setState({ loading: true });
-        const cryptoBoysContract = web3.eth.Contract(
+        const cryptoBoysContract = new web3.eth.Contract(
           CryptoBoys.abi,
           networkData.address
         );
         this.setState({ cryptoBoysContract });
         this.setState({ contractDetected: true });
+        this.setState({ loading: false });
         const cryptoBoysCount = await cryptoBoysContract.methods
-          .cryptoBoyCounter()
-          .call();
+        .cryptoBoyCounter()
+        .call();
         this.setState({ cryptoBoysCount });
         for (var i = 1; i <= cryptoBoysCount; i++) {
           const cryptoBoy = await cryptoBoysContract.methods
